@@ -196,7 +196,7 @@ section { padding: 6rem 0; }
   position: absolute;
   inset: 0;
   display: block;
-  background: transparent; /* lets the iframe show through */
+  background: transparent;
   cursor: pointer;
 }
 
@@ -269,3 +269,4 @@ section { padding: 6rem 0; }
   .hero p { font-size: 1rem; }
   .btn { padding: 0.7rem 1.5rem; font-size: 0.95rem; }
 }
+
