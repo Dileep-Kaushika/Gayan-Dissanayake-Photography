@@ -184,30 +184,3 @@ document.addEventListener('DOMContentLoaded', () => {
   console.log('Wedding Photography Website Loaded Successfully! 📸');
 });
 
-const scriptURL = "https://script.google.com/macros/s/AKfycbzD7E-QNwsaXWSJ0B8b4O0tZ8likS1ObwAne0RiWqv6ZqJ1RMjuumjWlTJ6HkXDpR59/exec";
-
-const contactForm = document.getElementById("contactForm");
-const formMessage = document.getElementById("formMessage");
-
-contactForm.addEventListener("submit", async (e) => {
-  e.preventDefault();
-
-  formMessage.textContent = "Sending...";
-  formMessage.className = "form-message"; // keep your styling if any
-
-  const formData = new FormData(contactForm);
-
-  try {
-    // no-cors avoids CORS issues with Apps Script
-    await fetch(scriptURL, {
-      method: "POST",
-      body: formData,
-      mode: "no-cors",
-    });
-
-    formMessage.textContent = "Message sent successfully!";
-    contactForm.reset();
-  } catch (err) {
-    formMessage.textContent = "Error sending message. Please try again.";
-  }
-});
