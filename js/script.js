@@ -3,6 +3,22 @@ const $ = (sel, ctx = document) => ctx.querySelector(sel);
 const $$ = (sel, ctx = document) => Array.from(ctx.querySelectorAll(sel));
 
 document.addEventListener('DOMContentLoaded', () => {
+
+  // ✅ Firebase init (ADD THIS HERE)
+  const firebaseConfig = {
+    apiKey: "AIzaSyC1Olo4qZivm6z7FV_896mVZTLdzkHoHmc",
+    authDomain: "gd-ph-53a6f.firebaseapp.com",
+    databaseURL: "https://gd-ph-53a6f-default-rtdb.firebaseio.com",
+    projectId: "gd-ph-53a6f",
+    storageBucket: "gd-ph-53a6f.firebasestorage.app",
+    messagingSenderId: "236376174800",
+    appId: "1:236376174800:web:6c60a7571055800b6a2ed5"
+  };
+
+  firebase.initializeApp(firebaseConfig);
+  const messagesRef = firebase.database().ref("contactMessages");
+
+
   // Navbar
   const hamburger = $('#hamburger');
   const navMenu = $('#navMenu');
@@ -166,19 +182,47 @@ document.addEventListener('DOMContentLoaded', () => {
     if (e.key === 'ArrowRight') changeLightboxImage(1);
   });
 
-  // Contact form (mock)
-  const contactForm = $('#contactForm');
-  const formMessage = $('#formMessage');
-  contactForm?.addEventListener('submit', (e) => {
-    e.preventDefault();
-    const data = Object.fromEntries(new FormData(contactForm).entries());
-    console.log('Form submitted:', data);
-    formMessage.className = 'form-message success';
-    formMessage.textContent = 'Thank you for your message! We will get back to you soon.';
-    contactForm.reset();
-    setTimeout(() => { formMessage.style.display = 'none'; }, 5000);
-  });
+// ✅ Contact form (Firebase)
+const contactForm = $('#contactForm');
+const formMessage = $('#formMessage');
 
+contactForm?.addEventListener('submit', async (e) => {
+  e.preventDefault();
+
+  formMessage.style.display = 'block';
+  formMessage.className = 'form-message';
+  formMessage.textContent = 'Sending...';
+
+  const fd = new FormData(contactForm);
+
+  const data = {
+    groomName: (fd.get('firstName') || '').toString().trim(),
+    brideName: (fd.get('lastName') || '').toString().trim(),
+    email: (fd.get('email') || '').toString().trim(),
+    phone: (fd.get('phone') || '').toString().trim(),
+    eventDate: (fd.get('eventDate') || '').toString().trim(),
+    service: (fd.get('service') || '').toString().trim(),
+    message: (fd.get('message') || '').toString().trim(),
+    createdAt: firebase.database.ServerValue.TIMESTAMP
+  };
+
+  try {
+    await messagesRef.push(data);
+
+    formMessage.className = 'form-message success';
+    formMessage.textContent = 'Thank you! Your message has been sent.';
+    contactForm.reset();
+
+    setTimeout(() => {
+      formMessage.style.display = 'none';
+    }, 5000);
+
+  } catch (err) {
+    console.error(err);
+    formMessage.className = 'form-message error';
+    formMessage.textContent = 'Error sending message. Please try again.';
+  }
+});
   // Initial
   updateActiveNavLink();
   console.log('Wedding Photography Website Loaded Successfully! 📸');
